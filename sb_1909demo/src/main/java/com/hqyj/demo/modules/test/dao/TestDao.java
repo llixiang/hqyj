@@ -2,12 +2,16 @@ package com.hqyj.demo.modules.test.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Many;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import com.hqyj.demo.modules.test.entity.City;
@@ -56,6 +60,8 @@ public interface TestDao {
 	})
 	Country getCountryByCountryId2(int countryId);
 	
+	Country getCountryByCountryId3(int countryId);
+	
 	/**
 	 * select all cities and country by countryname
 	 * @param countryName
@@ -65,4 +71,25 @@ public interface TestDao {
 	@ResultMap(value="countryResult")
 	Country getCountryByCountryName(String countryName);
 
+	/**
+	 * select cities by page
+	 * @return
+	 * @Options----配置属性值
+	 * useGeneratedKeys------采用生成的key（主键）=true,表示已经插入的主键值
+	 */
+	@Select("select * from m_city")
+	List<City> getCitiesByPage();
+	
+	@Insert("insert into m_city(city_name,local_city_name,country_id,date_created) "
+			+ "values "
+			+ "(#{cityName},#{localCityName},#{countryId},#{dateCreated})")
+	@Options(useGeneratedKeys=true,keyColumn="city_id",keyProperty="cityId")
+	void insertCity(City city);
+	
+	@Update("update m_city set local_city_name=#{localCityName} where city_id=#{cityId}")
+	void updateCity(City city);
+	
+	@Delete("delete from m_city where city_id=#{cityId}")
+	void deleteCity(int cityId);
 }
+

@@ -7,13 +7,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.github.pagehelper.PageInfo;
 import com.hqyj.demo.modules.test.entity.City;
 import com.hqyj.demo.modules.test.entity.Country;
 import com.hqyj.demo.modules.test.service.impl.TestServiceImpl;
@@ -34,6 +38,47 @@ public class TestController {
 	
 	private final static Logger LOGGER=LoggerFactory.getLogger(TestController.class);
 	
+	@DeleteMapping(value="/city/{cityId}")
+	@ResponseBody
+	public void deleteCity(@PathVariable int cityId){
+		testServiceImpl.deleteCity(cityId);
+	}
+	
+	/**
+	 * form表单方式提交   
+	 * 接收form表单用@ModelAttribute
+	 * update用put
+	 * @param city
+	 * @return
+	 */
+	@PutMapping(value="/city",consumes="application/x-www-form-urlencoded")
+	@ResponseBody
+	public City updateCity(@ModelAttribute City city){
+		return testServiceImpl.updateCity(city);
+		
+	}
+	
+	
+	/**
+	 * json格式提交
+	 * insert用post
+	 * 接受前台传过来的json格式用@RequestBody  
+	 * @param city
+	 * @return
+	 */
+	@PostMapping(value="/city",consumes="application/json")
+	@ResponseBody
+	public City insertCity(@RequestBody City city){
+		return testServiceImpl.insertCity(city);
+		
+	}
+	
+	@RequestMapping("/cities/{currentPage}/{pageSize}")
+	@ResponseBody
+	public PageInfo<City> getCitiesByPage(@PathVariable int currentPage,@PathVariable int pageSize){
+		return testServiceImpl.getCitiesByPage(currentPage, pageSize);
+		
+	}
 	
 	/**
 	 * 根据国家id查询所有城市
@@ -65,6 +110,13 @@ public class TestController {
 	@RequestMapping("/country2/{countryId}")
 	@ResponseBody
 	public Country getCountryByCountryId2(@PathVariable int countryId){
+		return testServiceImpl.getCountryByCountryId2(countryId);
+		
+	}
+	
+	@RequestMapping("/country3/{countryId}")
+	@ResponseBody
+	public Country getCountryByCountryId3(@PathVariable int countryId){
 		return testServiceImpl.getCountryByCountryId2(countryId);
 		
 	}
